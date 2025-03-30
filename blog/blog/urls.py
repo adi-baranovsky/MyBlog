@@ -1,6 +1,6 @@
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 from theblog.views import PostViewSet, CommentViewSet, LikeViewSet, ProfileViewSet
 from rest_framework import permissions
@@ -21,15 +21,16 @@ schema_view = get_schema_view(
 )
 
 router = DefaultRouter()
-router.register(r'posts', PostViewSet, basename='post')  # הגדרת basename
-router.register(r'comments', CommentViewSet, basename='comment')  # הגדרת basename
-router.register(r'likes', LikeViewSet, basename='like')  # הגדרת basename
-router.register(r'profiles', ProfileViewSet, basename='profile')  # הגדרת basename
+router.register(r'posts', PostViewSet, basename='post')
+router.register(r'comments', CommentViewSet, basename='comment')  
+router.register(r'likes', LikeViewSet, basename='like')  
+router.register(r'profiles', ProfileViewSet, basename='profile')  
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),  
     path('api/', include(router.urls)),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 
 ]
