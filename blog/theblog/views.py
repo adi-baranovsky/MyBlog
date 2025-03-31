@@ -95,28 +95,25 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
 
     def get_queryset(self):
-        username = self.request.query_params.get('username', None)
-        if username:
-            try:
-                user_instance = User.objects.get(username=username)
-                return Profile.objects.filter(user=user_instance)
-            except User.DoesNotExist:
-                raise NotFound(detail="User not found")
-        return Profile.objects.all()  # all profiles
+        user = self.request.query_params.get('user', None)
+        if user:
+            return Profile.objects.filter(user__username=user)  # Filter by username
+        return super().get_queryset()
 
-
-
-"""
-#swagger
-@swagger_auto_schema(operation_description="search for specific user")
-@action(detail=False, methods=['get'], url_path='user-posts')
-def user_posts(self, request):
-    user = request.query_params.get('user', None)
-    if user:
-        posts = Post.objects.filter(author__username=user)
-        serializer = self.get_serializer(posts, many=True)
-        return Response(serializer.data)
-    return Response({"detail": "User Not Found"}, status=400)
-"""
+    @swagger_auto_schema(
+        operation_description="Get Profile for a specific username",
+        manual_parameters=[openapi.Parameter('user', openapi.IN_QUERY, description="Username of the user", type=openapi.TYPE_STRING)]
+    )
+    @action(detail=False, methods=['get'], url_path='profile-by-username')
+    def profile_by_username(self, request):
+        user = request.query_params.get('user', None)
+        if user:
+            profile = Profile.objects.filter(user__username=user).first()  # Get single profile if exists
+            if profile:
+                serializer = self.get_serializer(profile)
+                return Response(serializer.data)
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"detail": "Username parameter is required"}, status=status.HTTP_400_BAD_REQUEST)

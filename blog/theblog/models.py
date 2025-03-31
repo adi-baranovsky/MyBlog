@@ -43,10 +43,8 @@ class Comment(models.Model):
             self.post.likes_count = Like.objects.filter(content_type=ContentType.objects.get_for_model(Post), object_id=self.post.id).count()
             self.post.save()
 
-
-
     def __str__(self):
-        return f'{self.author}: {self.content} | ID: {self.id}'
+        return f'{self.author.username}: {self.content} | ID: {self.id}'
     
 
 class Like(models.Model):
