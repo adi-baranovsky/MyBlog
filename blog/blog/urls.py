@@ -6,6 +6,7 @@ from theblog.views import PostViewSet, CommentViewSet, LikeViewSet, ProfileViewS
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from theblog.views import register_view, get_profile
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -32,5 +33,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-
+    path('api/register/', register_view, name='register'),
+    path('api/profile/', get_profile, name='get_profile'),
 ]

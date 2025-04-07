@@ -11,7 +11,57 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.contenttypes.models import ContentType
+# views.py
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login
 
+
+from django.contrib.auth.hashers import make_password
+
+@csrf_exempt
+def register_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        email = data.get('email')
+
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"error": "Username already exists."}, status=400)
+
+        user = User.objects.create(username=username, email=email, password=make_password(password))
+        
+        Profile.objects.create(user=user)
+        login(request, user)  # התחברות אוטומטית
+        
+        return JsonResponse({
+            "message": "User registered successfully!",
+            "profile_url": f"/profile/?user={username}"
+        }, status=201)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def get_profile(request):
+    username = request.GET.get('user')
+
+    try:
+        user = User.objects.get(username=username)
+        
+        profile = Profile.objects.get(user=user)
+        return JsonResponse({
+            "username": user.username,
+            "bio": profile.bio,
+            "profile_image": profile.avatar_url if profile.avatar_url else request.build_absolute_uri(profile.avatar.url)
+        })
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    except Profile.DoesNotExist:
+        return JsonResponse({"error": "Profile not found"}, status=404)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -73,6 +123,9 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     pagination_class = PostPagination
     queryset = Post.objects.all()  # Default queryset
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     @swagger_auto_schema(
         manual_parameters=[ 

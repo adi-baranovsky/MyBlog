@@ -9,7 +9,8 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
-    picture = models.ImageField(null=True, blank=True)
+    pic = models.ImageField(upload_to="postpic/", blank=True, null=True)
+    pic_url = models.URLField(blank=True, null=True)
     created_date = models.DateTimeField(default=now, editable=False)
     likes_count = models.PositiveIntegerField(default=0)
 
@@ -84,8 +85,13 @@ class Like(models.Model):
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    bio = models.TextField()
-    avatar = models.ImageField(null=True, blank=True)
+    bio = models.TextField(default="Hey there!")
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    avatar_url = models.URLField(default="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg")
+
+    def get_avatar(self):
+        return self.avatar_url if self.avatar_url else self.avatar.url
 
     def __str__(self):
         return f'{self.user} - {self.bio}'
+
