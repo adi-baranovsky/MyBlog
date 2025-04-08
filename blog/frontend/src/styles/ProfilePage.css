@@ -1,0 +1,64 @@
+/* Profile Container - Big and Spacious */
+.profile-container {
+    max-width: 900px; /* Wide box */
+    height: 500px; /* Tall box */
+    margin: 100px auto 0;
+    padding: 80px 50px; /* Spacious */
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    position: relative; /* Needed for floating image */
+    width: 700px;
+}
+
+/* Profile Image - Bigger */
+.profile-image {
+    width: 220px; /* Increased size */
+    height: 220px;
+    border-radius: 50%;
+    object-fit: cover;
+    position: absolute;
+    top: -110px; /* Adjusted so half is hidden */
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid white; /* Clean effect */
+}
+
+/* Username */
+.profile-username {
+    font-size: 2.8rem; /* Slightly bigger */
+    font-weight: bold;
+    color: #333;
+    margin-top: 80px; /* More space under the picture */
+}
+
+/* Bio */
+.profile-bio {
+    font-size: 1.6rem; /* Bigger font */
+    color: #555;
+    margin-top: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-container {
+        max-width: 90%;
+        height: auto;
+        padding: 60px 30px;
+    }
+
+    .profile-image {
+        width: 180px; /* Smaller for mobile */
+        height: 180px;
+        top: -90px;
+    }
+
+    .profile-username {
+        font-size: 2.2rem;
+    }
+
+    .profile-bio {
+        font-size: 1.3rem;
+    }
+}

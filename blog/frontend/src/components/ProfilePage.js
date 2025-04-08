@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import "../styles/ProfilePage.css"; // Import the CSS file
 
 function ProfilePage() {
     const [profile, setProfile] = useState(null);
     const params = new URLSearchParams(window.location.search);
-    const username = params.get("user"); // לוקח את שם המשתמש מה-URL
+    const username = params.get("user");
 
     useEffect(() => {
         fetch(`http://127.0.0.1:8000/api/profile/?user=${username}`)
@@ -13,15 +14,19 @@ function ProfilePage() {
     }, [username]);
 
     if (!profile) return <p>Loading...</p>;
-    
 
     return (
-        <div>
-            <h1>{profile.username}'s Profile</h1>
-            <img src={profile.profile_image} alt="Profile" style={{ width: "150px", height: "150px", borderRadius: "50%" }} />
-            <p>{profile.bio}</p>
+        <div className="profile-container">
+            <div className="profile-header">
+                <img src={profile.profile_image} alt="Profile" className="profile-image" />
+                <div className="profile-info">
+                    <h1 className="profile-username">{profile.username}</h1>
+                    <p className="profile-bio">{profile.bio}</p>
+                </div>
+            </div>
         </div>
     );
+    
 }
 
 export default ProfilePage;

@@ -1,0 +1,70 @@
+/* Updated Styling for Register and Login Pages - Bigger and More Spacious */
+.form-container {
+  max-width: 700px; /* Increased max width to 700px for more space */
+  margin: 100px auto; /* More margin to move the form lower */
+  padding: 40px; /* Increased padding for the form container */
+  background-color: #f9f9f9;
+  border-radius: 15px; /* Larger border-radius for even rounder edges */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* More depth with a bigger shadow */
+}
+
+h1, h2 {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #333;
+  font-size: 2.5rem; /* Increased font size for headings */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  margin: 20px 0; /* More space between inputs */
+  padding: 18px; /* Increased padding inside input fields */
+  border: 1px solid #ddd;
+  border-radius: 10px; /* Increased border-radius */
+  font-size: 20px; /* Even larger font size for inputs */
+}
+
+button {
+  padding: 20px; /* Bigger button padding */
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 10px; /* Bigger rounded edges */
+  font-size: 22px; /* Even larger button text */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px; /* More space above the button */
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.5rem; /* Larger error message */
+}
+
+.success {
+  color: green;
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.5rem; /* Larger success message */
+}
+
+/* Make the page responsive */
+@media (max-width: 600px) {
+  .form-container {
+      padding: 30px; /* Less padding for smaller screens */
+  }
+
+  input, button {
+      font-size: 18px; /* Slightly smaller font size for mobile */
+  }
+}

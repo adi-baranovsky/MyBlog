@@ -1,32 +1,38 @@
 import React, { useState } from 'react';
 import { login } from '../services/api';
+import "../styles/LoginPage.css";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');  // הוסף את המשתנה הזה
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = await login(username, password);  // השתמש ב-username במקום ב-email
-      if (data.token) {
+      const data = await login(username, password);
+      console.log(data); 
+      if (data.access) {
+        localStorage.setItem('token', data.access);
         window.location.href = "/posts"; 
+        setSuccess("Login Successful!");
       }
     } catch (err) {
       setError("Invalid credentials, please try again.");
     }
-  }
+  };
 
   return (
-    <div>
+    <div className="form-container">
       <h1>Login</h1>
-      {error && <p>{error}</p>}
+      {error && <p className="error">{error}</p>}
+      {success && <p className="success">{success}</p>}
       <form onSubmit={handleSubmit}>
         <input 
           type="text" 
           value={username} 
-          onChange={(e) => setUsername(e.target.value)}  // עדכון המשתנה username
+          onChange={(e) => setUsername(e.target.value)}  
           placeholder="Username" 
         />
         <input 

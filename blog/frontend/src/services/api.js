@@ -23,14 +23,22 @@ export const getPosts = async (page) => {
   };
   
   export const login = async (username, password) => {
-    const response = await fetch('/api/login', {
+    const response = await fetch('http://127.0.0.1:8000/api/token/', {
       method: 'POST',
-      body: JSON.stringify({ username, password }), 
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
     });
-    const data = await response.json();
-    return data;
+    
+    if (!response.ok) {
+      throw new Error('Invalid credentials');
+    }
+    
+    return await response.json();
   };
+  
+  
   
   
   export const register = async (email, password) => {

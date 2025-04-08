@@ -129,3 +129,22 @@ button:disabled {
   flex-wrap: wrap;
   justify-content: space-between; /* Adjust post placement */
 }
+
+.like-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  transition: transform 0.2s;
+}
+
+.like-button.liked {
+  color: red; /* Red when liked */
+  transform: scale(1.2); /* Slight zoom effect */
+}
+
+.post-likes-count {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
