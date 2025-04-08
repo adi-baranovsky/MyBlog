@@ -1,0 +1,131 @@
+/* Lighter background */
+body {
+  background-color: #E1F5FE; /* Lighter pastel blue */
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Post container */
+.post-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  max-width: 90%;
+  padding: 20px;
+}
+
+/* The big box around the posts */
+.post-card {
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 600px; /* Bigger post box */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 20px;
+}
+
+/* Hover effect */
+.post-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Post header (Title above the posts) */
+h1.posts-title {
+  font-size: 32px;
+  color: #0288D1; /* Pastel blue */
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Post title */
+.post-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #0288D1; /* Pastel blue */
+  margin-bottom: 10px;
+}
+
+/* Post image */
+.post-image {
+  width: 100%;
+  height: 300px; /* Bigger images */
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Post content */
+.post-content {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Pagination buttons */
+.pagination-buttons button {
+  width: 150px;  /* Set the width to make the buttons uniform */
+  padding: 10px 15px;  /* Adjust padding if needed */
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: #0288D1;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #0277BD;
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 850px) {
+  .post-list-container {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .post-card {
+      width: 90%;
+  }
+}
+.page-title {
+  text-align: center;
+  font-size: 2rem;  /* Adjust size if needed */
+  margin-bottom: 20px;  /* Optional, adds spacing between the title and posts */
+}
+
+
+.posts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Adjust post placement */
+}

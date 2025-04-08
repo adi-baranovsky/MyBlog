@@ -122,7 +122,7 @@ class PostPagination(PageNumberPagination):
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     pagination_class = PostPagination
-    queryset = Post.objects.all()  # Default queryset
+    queryset = Post.objects.order_by('-id')  # Default queryset
 
     def get_serializer_context(self):
         return {'request': self.request}

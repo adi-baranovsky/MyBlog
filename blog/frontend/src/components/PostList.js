@@ -1,38 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { getPosts } from '../services/api';
 import PostItem from './PostItem';
+import "../styles/PostList.css"; 
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
-  const [nextPage, setNextPage] = useState(null); // הוספנו את nextPage
+  const [nextPage, setNextPage] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/posts/?page=${page}`);
-        const data = await response.json();
-        console.log("Data:", data);
-        setPosts(data.results);
-        setNextPage(data.next); // עדכון אם יש עמודים נוספים
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
+      const response = await fetch(`http://127.0.0.1:8000/posts/?page=${page}`);
+      const data = await response.json();
+      setPosts(data.results);
+      setNextPage(data.next);
     };
-    
     fetchPosts();
   }, [page]);
 
   return (
-    <div>
-      <h1>Posts</h1>
+    <div className="post-list-container">
       {posts.map(post => (
         <PostItem key={post.id} post={post} />
       ))}
-      <button onClick={() => setPage(prevPage => prevPage - 1)} disabled={page <= 1}>Previous</button>
-      <button 
-        onClick={() => setPage(prevPage => prevPage + 1)} 
-        disabled={!nextPage}>Next</button>
+      <div className="pagination-buttons">
+        <button onClick={() => setPage(prevPage => prevPage - 1)} disabled={page <= 1}>Previous</button>
+        <button onClick={() => setPage(prevPage => prevPage + 1)} disabled={!nextPage}>Next</button>
+      </div>
     </div>
   );
 }

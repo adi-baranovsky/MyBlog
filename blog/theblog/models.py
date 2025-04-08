@@ -9,19 +9,23 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
-    pic = models.ImageField(upload_to="postpic/", blank=True, null=True)
-    pic_url = models.URLField(blank=True, null=True)
+    pic = models.URLField(blank=True, null=True, default="https://ichef.bbci.co.uk/ace/standard/2560/cpsprodpb/b2d0/live/d4d933e0-8a17-11ef-bfd3-790fcba1cccf.jpg")  # External image URL
     created_date = models.DateTimeField(default=now, editable=False)
     likes_count = models.PositiveIntegerField(default=0)
 
+    def __str__(self):
+        return f'{self.title} | By: {self.author} | ID: {self.id}'
+
+
     def delete(self, *args, **kwargs):
-        #delete all likes and comments related to the post
+        # Delete all likes and comments related to the post
         Like.objects.filter(content_type=ContentType.objects.get_for_model(self), object_id=self.id).delete()
         Comment.objects.filter(post=self).delete()
         super().delete(*args, **kwargs)
 
     def __str__(self):
         return f'{self.title} | By: {self.author} | ID: {self.id} | Content Type: {ContentType.objects.get(model="post").id}'
+
 
 
 class Comment(models.Model):
