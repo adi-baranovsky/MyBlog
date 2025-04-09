@@ -12,10 +12,10 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const data = await login(username, password);
-      console.log(data); 
       if (data.access) {
         localStorage.setItem('token', data.access);
-        window.location.href = "/posts"; 
+        localStorage.setItem('username', username); // Save the username
+        window.location.href = "/posts";
         setSuccess("Login Successful!");
       }
     } catch (err) {

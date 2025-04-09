@@ -1,64 +1,79 @@
 /* Navbar Styling */
 nav {
-  background-color: #f4f4f4; /* Light white-ish color */
-  padding: 15px 30px; /* More spacious */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: Arial, sans-serif;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for effect */
-}
-
-nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-}
-
-nav ul li {
-  margin-right: 25px; /* Increased space between links */
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: #333; /* Dark text for better readability */
-  font-size: 18px;
-  transition: color 0.3s ease;
-}
-
-nav ul li a:hover {
-  color: #ff5722; /* Vibrant color on hover */
-}
-
-/* For the welcome message to be aligned at the right corner */
-.welcome {
-  color: #333;
-  font-size: 18px;
-  position: absolute;
-  right: 30px; /* Right aligned */
-  top: 50%; /* Vertically centered */
-  transform: translateY(-50%); /* Adjust vertical position */
-}
-
-@media (max-width: 600px) {
-  nav {
-    flex-direction: column;
-    padding: 10px;
-  }
-
-  nav ul {
-    flex-direction: column;
+    background-color: #f4f4f4; /* Light white-ish color */
+    padding: 15px 30px; /* More spacious */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for effect */
+  }
+  
+  nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+  
+  nav ul li {
+    margin-right: 25px; /* Increased space between links */
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: #333; /* Dark text for better readability */
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+  
+  nav ul li a:hover {
+    color: #0288D1; /* Vibrant color on hover */
+  }
+  
+  /* For the welcome message to be aligned at the right corner */
+  .welcome {
+    color: #333;
+    font-size: 18px;
+    position: absolute;
+    right: 30px; /* Right aligned */
+    top: 50%; /* Vertically centered */
+    transform: translateY(-50%); /* Adjust vertical position */
+  }
+  
+  @media (max-width: 600px) {
+    nav {
+      flex-direction: column;
+      padding: 10px;
+    }
+  
+    nav ul {
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+    }
+  
+    nav ul li {
+      margin-bottom: 10px;
+    }
   }
 
-  nav ul li {
-    margin-bottom: 10px;
-  }
+  /* Styling the logout button to look like a link */
+nav ul li button.logout {
+    background: none;
+    border: none;
+    color: #333; /* Same color as links */
+    font-size: 18px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+nav ul li button.logout:hover {
+    color: #0288D1; /* Hover effect like links */
 }

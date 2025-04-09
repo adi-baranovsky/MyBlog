@@ -10,6 +10,8 @@ from theblog.views import register_view, get_profile
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 
 
 schema_view = get_schema_view(

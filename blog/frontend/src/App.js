@@ -12,15 +12,9 @@ const App = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      fetch('/api/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-        .then(response => response.json())
-        .then(data => setUser(data))
-        .catch(error => console.error('Error fetching user:', error));
+    const username = localStorage.getItem('username'); // Retrieve the username
+    if (token && username) {
+      setUser({ username }); // Set the user state with the username
     }
   }, []);
 

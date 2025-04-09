@@ -18,9 +18,18 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from .models import Profile
+from .serializers import ProfileSerializer
 
-
+import logging
 from django.contrib.auth.hashers import make_password
+
+from rest_framework.exceptions import PermissionDenied
+logger = logging.getLogger(__name__)
+
 
 @csrf_exempt
 def register_view(request):
@@ -46,22 +55,19 @@ def register_view(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
+@api_view(['GET'])
 def get_profile(request):
     username = request.GET.get('user')
+    logger.info(f"Fetching profile for user: {username}")  # Log the username
 
     try:
-        user = User.objects.get(username=username)
-        
-        profile = Profile.objects.get(user=user)
-        return JsonResponse({
-            "username": user.username,
-            "bio": profile.bio,
-            "profile_image": profile.avatar_url if profile.avatar_url else request.build_absolute_uri(profile.avatar.url)
-        })
-    except User.DoesNotExist:
-        return JsonResponse({"error": "User not found"}, status=404)
+        profile = Profile.objects.get(user__username=username)
+        logger.info(f"Profile found for user: {username}")  # Log success
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
     except Profile.DoesNotExist:
-        return JsonResponse({"error": "Profile not found"}, status=404)
+        logger.error(f"Profile not found for user: {username}")  # Log error
+        return Response({"error": "Profile not found."}, status=404)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

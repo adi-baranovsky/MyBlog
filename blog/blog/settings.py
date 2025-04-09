@@ -40,19 +40,18 @@ INSTALLED_APPS = [
     'theblog',
     'rest_framework',
     'drf_yasg',
-     'corsheaders',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Place this before CommonMiddleware
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',  # חשוב להוסיף את זה אם לא נמצא
 ]
 
 ROOT_URLCONF = 'blog.urls'
@@ -131,6 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",  # הכתובת של ה-frontend שלך
+    "http://localhost:3000",  # Frontend origin
 ]
 
 MEDIA_URL = '/media/'

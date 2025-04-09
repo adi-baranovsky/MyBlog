@@ -79,7 +79,7 @@ h1.posts-title {
   margin: 5px;
   border: none;
   border-radius: 5px;
-  background-color: #007bff;
+  background-color: #5eaafc;
   color: white;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -89,7 +89,7 @@ button {
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
-  background-color: #0288D1;
+  background-color: #2795d1;
   color: white;
   font-weight: bold;
   cursor: pointer;

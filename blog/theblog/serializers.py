@@ -24,8 +24,17 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProfileSerializer(serializers.ModelSerializer):
-    #user = serializers.CharField(source='user.username', read_only=True)  # Show username instead of ID
+    profile_image = serializers.SerializerMethodField()  # Add a custom field for the profile image
+    username = serializers.CharField(source='user.username')  # Include the username from the related User model
 
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ['username', 'bio', 'profile_image']  # Include username in the fields
+
+    def get_profile_image(self, obj):
+        # Return avatar_url if it exists, otherwise return the avatar file URL
+        if obj.avatar_url:
+            return obj.avatar_url
+        elif obj.avatar:
+            return obj.avatar.url
+        return None
