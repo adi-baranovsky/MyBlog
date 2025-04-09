@@ -20,14 +20,15 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    setUser(null);
+    localStorage.removeItem('username');
+    setUser(null); // Reset user state
   };
 
   return (
     <Router>
       <Navbar user={user} onLogout={handleLogout} />
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage setUser={setUser} />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/posts" element={<PostList />} />
         <Route path="/profile" element={<ProfilePage />} />

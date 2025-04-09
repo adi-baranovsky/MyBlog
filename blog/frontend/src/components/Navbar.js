@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
-  const username = localStorage.getItem('username'); // Retrieve the username
+  const [username, setUsername] = useState(localStorage.getItem('username') || '');
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUsername(localStorage.getItem('username') || '');
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    setUsername(localStorage.getItem('username') || '');
+  }, [localStorage.getItem('username')]); // 🔥 This will trigger a re-render
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove the token
-    localStorage.removeItem('username'); // Remove the username
-    window.location.href = "/login"; // Redirect to the login page
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    setUsername(''); // Update state
+    window.location.href = "/login";
   };
 
   return (

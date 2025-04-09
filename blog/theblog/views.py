@@ -31,6 +31,27 @@ from rest_framework.exceptions import PermissionDenied
 logger = logging.getLogger(__name__)
 
 
+from rest_framework import generics, permissions
+from .models import Comment
+from .serializers import CommentSerializer
+
+from dj_rest_auth.views import UserDetailsView
+from rest_framework.response import Response
+
+class CustomUserDetailsView(UserDetailsView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return Response({"id": user.id, "username": user.username, "email": user.email})
+
+
+class CommentCreateView(generics.CreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
 @csrf_exempt
 def register_view(request):
     if request.method == 'POST':
