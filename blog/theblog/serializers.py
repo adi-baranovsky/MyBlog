@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Post, Comment, Like, Profile, User
+from django.contrib.contenttypes.models import ContentType
 
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.username', read_only=True)
@@ -51,7 +52,30 @@ class CommentSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = '__all__'
+        fields = ['id', 'user', 'content_type', 'object_id']
+    
+    def create(self, validated_data):
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            validated_data["user"] = request.user  # Assign the user from the request
+        else:
+            raise serializers.ValidationError("User must be authenticated.")
+        
+        # Ensure that content_type is properly assigned
+        content_type = validated_data.get('content_type')
+        if not content_type:
+            # Check if it's a Post or Comment and set the content_type accordingly
+            if validated_data.get('object_id'):
+                obj = Post.objects.filter(id=validated_data['object_id']).first() or Comment.objects.filter(id=validated_data['object_id']).first()
+                if isinstance(obj, Post):
+                    validated_data['content_type'] = ContentType.objects.get_for_model(Post)
+                elif isinstance(obj, Comment):
+                    validated_data['content_type'] = ContentType.objects.get_for_model(Comment)
+        
+        return super().create(validated_data)
+
+
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     profile_image = serializers.SerializerMethodField()  # Add a custom field for the profile image

@@ -210,3 +210,66 @@ button:disabled {
 .comment-form {
   margin-top: 15px;
 }
+
+.like-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+  padding: 4px;
+  color: black; /* <-- this is important */
+}
+
+
+.like-btn:hover {
+  transform: scale(1.1);
+}
+
+.like-btn:active {
+  transform: scale(0.95);
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.heart-icon {
+  transition: color 0.3s ease;
+}
+
+.heart-icon.liked {
+  color: red;
+  animation: pulse 0.3s ease;
+}
+
+.comment-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+  padding: 4px;
+  color: black;
+  margin-right: 10px;
+}
+
+.comment-btn:hover {
+  transform: scale(1);
+  color: white;
+}
+
+.comment-btn:active {
+  transform: scale(0.95);
+}

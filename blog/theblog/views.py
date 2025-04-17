@@ -151,32 +151,69 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response({"detail": "Post ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         object_id = self.request.query_params.get('object_id', None)
         content_type = self.request.query_params.get('content_type', None)
-        if object_id and content_type:
-            return Like.objects.filter(object_id=object_id, content_type=content_type)
+        user = self.request.user if self.request.user.is_authenticated else None
+
+        if object_id and content_type and user:
+            return Like.objects.filter(object_id=object_id, content_type=content_type, user=user)
+
         return Like.objects.none()
-    
-    @swagger_auto_schema(
-        operation_description="Get likes for a specific post by ID",
-        manual_parameters=[openapi.Parameter('post', openapi.IN_QUERY, description="ID of the post", type=openapi.TYPE_INTEGER)]
-    )
-    @action(detail=False, methods=['get'], url_path='likes-by-post')
-    def likes_by_post(self, request):
-        post_id = request.query_params.get('post', None)
-        if post_id:
-            # מציאת הלייקים שקשורים לפוסט
-            likes = Like.objects.filter(object_id=post_id, content_type=ContentType.objects.get_for_model(Post))
-            serializer = self.get_serializer(likes, many=True)
-            return Response(serializer.data)
-        return Response({"detail": "Post ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def create(self, request, *args, **kwargs):
+        post_id = request.data.get("object_id")
+        content_type_id = request.data.get("content_type")
+        
+        # Ensure user is authenticated
+        user = request.user
+        if not user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Check if the like already exists
+        existing_like = Like.objects.filter(object_id=post_id, user=user, content_type=content_type_id).first()
+
+        if existing_like:
+            # If it exists, we should delete it (unlike)
+            existing_like.delete()
+            return Response({"detail": "Like removed."}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            # If it does not exist, we should create the like
+            validated_data = {
+                "object_id": post_id,
+                "content_type": content_type_id,
+                "user": user.pk  # Pass user primary key here
+            }
+            
+            serializer = self.get_serializer(data=validated_data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'])
+    def check_liked(self, request):
+        post_id = request.query_params.get("object_id")
+        content_type_id = request.query_params.get("content_type")
+
+        if not post_id or not content_type_id:
+            return Response({"detail": "Post ID and content type are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        if not user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Check if the user already liked the post
+        liked = Like.objects.filter(object_id=post_id, user=user, content_type=content_type_id).exists()
+        
+        return Response({"liked": liked}, status=status.HTTP_200_OK)
+
+
 
 
 
