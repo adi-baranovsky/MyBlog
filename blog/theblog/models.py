@@ -32,7 +32,7 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    parent_comment = models.ForeignKey('self', default=0, null=True, blank=True, on_delete=models.CASCADE)
+    parent_comment = models.ForeignKey('self', null=True, blank=True, default=None, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=now, editable=False)
     likes_count = models.PositiveIntegerField(default=0)
 

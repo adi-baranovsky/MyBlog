@@ -53,17 +53,14 @@ class CommentCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        print(f"User making request: {self.request.user}")  # Debugging
-        if not self.request.user or self.request.user.is_anonymous:
-            return JsonResponse({"error": "User not authenticated"}, status=400)
-
         post_id = self.request.data.get('post')
         try:
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
             raise NotFound(detail="Post not found")
 
-        serializer.save(author=self.request.user, post=post)
+        serializer.save(post=post, author=self.request.user)
+
 
 
 
@@ -118,18 +115,16 @@ def get_profile(request):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_serializer_context(self):
-        return {'request': self.request}  # <-- ADD THIS
-     
+        return {'request': self.request}
+
     def get_queryset(self):
-        post_id = self.request.query_params.get('post', None)
+        post_id = self.request.query_params.get('post')
         if post_id:
             return Comment.objects.filter(post_id=post_id)
         return Comment.objects.none()
-    
-
 
     def perform_create(self, serializer):
         post_id = self.request.data.get('post')
@@ -137,9 +132,8 @@ class CommentViewSet(viewsets.ModelViewSet):
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
             raise NotFound(detail="Post not found")
-        
-        # Automatically assign the authenticated user to the author field
-        serializer.save(author=self.request.user, post=post)
+
+        serializer.save(post=post)
 
     @swagger_auto_schema(
         operation_description="Get comments for a specific post by ID",
@@ -149,12 +143,13 @@ class CommentViewSet(viewsets.ModelViewSet):
     )
     @action(detail=False, methods=['get'], url_path='comments-by-post')
     def comments_by_post(self, request):
-        post_id = request.query_params.get('post', None)
+        post_id = request.query_params.get('post')
         if post_id:
             comments = Comment.objects.filter(post_id=post_id)
             serializer = self.get_serializer(comments, many=True)
             return Response(serializer.data)
         return Response({"detail": "Post ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

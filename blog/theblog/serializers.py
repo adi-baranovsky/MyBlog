@@ -29,21 +29,21 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'content', 'author_username', 'author_avatar', 'post', 'created_date']
+        read_only_fields = ['author_username', 'author_avatar']
 
     def get_author_username(self, obj):
         return obj.author.username
 
     def get_author_avatar(self, obj):
         profile = getattr(obj.author, 'profile', None)
-        if profile:
-            return profile.get_avatar()
-        return None
+        return profile.get_avatar() if profile else None
 
     def create(self, validated_data):
         request = self.context.get("request")
         if request and request.user.is_authenticated:
             validated_data["author"] = request.user
         return super().create(validated_data)
+
 
 
 
