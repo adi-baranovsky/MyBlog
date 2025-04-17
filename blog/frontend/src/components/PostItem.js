@@ -4,68 +4,88 @@ import "../styles/PostList.css";
 const PostItem = ({ post }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [user, setUser] = useState(null); // Assuming you have a way to check logged-in user
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState("");
+
+  // Just grab the token once from localStorage
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token"); // Retrieve the token from localStorage
-
-      if (!token) {
-        console.error("No token found!");
-        return;
-      }
-
+    const fetchUserAndComments = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/auth/user/", {
+        if (token) {
+          const userResponse = await fetch("http://127.0.0.1:8000/api/auth/user/", {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            setUser(userData);
+          }
+        }
+
+        const commentsResponse = await fetch(`http://127.0.0.1:8000/api/comments/?post=${post.id}`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`, // Use Bearer + token format
+            "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch user: ${response.statusText}`);
+        if (commentsResponse.ok) {
+          const commentsData = await commentsResponse.json();
+          setComments(commentsData);
+        } else {
+          const errText = await commentsResponse.text();
+          console.error("Failed to fetch comments:", errText);
         }
-
-        const userData = await response.json();
-        setUser(userData);
-        console.log("User data:", userData);
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchUser();
-  }, []); // Empty array to fetch on mount
+    fetchUserAndComments();
+  }, [post.id, token]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
 
-    if (!newComment.trim()) return;
-
-    const token = localStorage.getItem("token"); // Retrieve token from localStorage
-
-    if (!token) {
-      console.error("No token found for commenting!");
+    if (!newComment.trim()) {
+      console.error("Comment content cannot be empty.");
       return;
     }
 
-    const response = await fetch(`http://127.0.0.1:8000/comments/create/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`, // Use Bearer + token format for comment submission
-      },
-      body: JSON.stringify({ content: newComment, post: post.id }),
-    });
+    const commentData = {
+      content: newComment,
+      post: post.id,
+    };
 
-    if (response.ok) {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/comments/create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(commentData),
+      });
+
       const data = await response.json();
-      setComments([...comments, data]);
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to post comment.");
+      }
+
+      console.log("Comment posted successfully:", data);
       setNewComment("");
-    } else {
-      console.error("Failed to post comment");
+
+      // Refresh comments after posting
+      setComments((prev) => [...prev, data]);
+    } catch (error) {
+      console.error("Error posting comment:", error);
     }
   };
 
@@ -75,17 +95,14 @@ const PostItem = ({ post }) => {
       <h3 className="post-author">By: {post.author}</h3>
       {post.pic && <img src={post.pic} alt="Post" className="post-image" />}
       <p className="post-content">{post.content}</p>
-      <div className="post-likes-count">Likes: {post.likes_count}</div>
-
+      <div className="post-likes-count">{comments.length}💬  {post.likes_count}❤  </div>
       <div className="comments-section">
-        <h4>Comments:</h4>
         {comments.length > 0 ? (
           comments.map((comment) => (
             <div key={comment.id} className="comment">
               <p>
-                <strong>{comment.author}</strong>: {comment.content}
+              <strong>{comment.author_username}</strong>: {comment.content}
               </p>
-              <p>Likes: {comment.likes_count}</p>
             </div>
           ))
         ) : (
@@ -95,20 +112,27 @@ const PostItem = ({ post }) => {
 
       {user ? (
         <form onSubmit={handleCommentSubmit} className="comment-form">
+        <div className="comment-input-wrapper">
+          
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Write a comment..."
           />
-          <button type="submit">Post Comment</button>
-        </form>
+          <button type="submit" className="submit-btn">➤</button>
+        </div>
+      </form>
+      
       ) : (
         <p>
           <i>Login to add a comment</i>
         </p>
       )}
+
+      {error && <p>{error}</p>}
     </div>
   );
 };
 
 export default PostItem;
+

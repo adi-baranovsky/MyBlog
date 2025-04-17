@@ -38,19 +38,36 @@ from .serializers import CommentSerializer
 from dj_rest_auth.views import UserDetailsView
 from rest_framework.response import Response
 
+
 class CustomUserDetailsView(UserDetailsView):
     def get(self, request, *args, **kwargs):
         user = request.user
         return Response({"id": user.id, "username": user.username, "email": user.email})
 
 
+from django.http import JsonResponse
+
 class CommentCreateView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        print(f"User making request: {self.request.user}")  # Debugging
+        if not self.request.user or self.request.user.is_anonymous:
+            return JsonResponse({"error": "User not authenticated"}, status=400)
 
+        post_id = self.request.data.get('post')
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            raise NotFound(detail="Post not found")
+
+        serializer.save(author=self.request.user, post=post)
+
+
+
+from rest_framework.authtoken.models import Token
 
 @csrf_exempt
 def register_view(request):
@@ -64,16 +81,24 @@ def register_view(request):
             return JsonResponse({"error": "Username already exists."}, status=400)
 
         user = User.objects.create(username=username, email=email, password=make_password(password))
-        
         Profile.objects.create(user=user)
-        login(request, user)  # התחברות אוטומטית
-        
+
+        # Set the backend and login
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, user)
+
+        # Generate a token for the new user
+        token, created = Token.objects.get_or_create(user=user)
+
         return JsonResponse({
             "message": "User registered successfully!",
+            "token": token.key,
             "profile_url": f"/profile/?user={username}"
         }, status=201)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
 
 
 @api_view(['GET'])
@@ -93,26 +118,44 @@ def get_profile(request):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_serializer_context(self):
+        return {'request': self.request}  # <-- ADD THIS
+     
     def get_queryset(self):
         post_id = self.request.query_params.get('post', None)
         if post_id:
             return Comment.objects.filter(post_id=post_id)
         return Comment.objects.none()
+    
+
+
+    def perform_create(self, serializer):
+        post_id = self.request.data.get('post')
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            raise NotFound(detail="Post not found")
+        
+        # Automatically assign the authenticated user to the author field
+        serializer.save(author=self.request.user, post=post)
 
     @swagger_auto_schema(
         operation_description="Get comments for a specific post by ID",
-        manual_parameters=[openapi.Parameter('post', openapi.IN_QUERY, description="ID of the post", type=openapi.TYPE_INTEGER)]
+        manual_parameters=[ 
+            openapi.Parameter('post', openapi.IN_QUERY, description="ID of the post", type=openapi.TYPE_INTEGER)
+        ]
     )
     @action(detail=False, methods=['get'], url_path='comments-by-post')
     def comments_by_post(self, request):
         post_id = request.query_params.get('post', None)
         if post_id:
-            # מציאת התגובות שקשורות לפוסט
             comments = Comment.objects.filter(post_id=post_id)
             serializer = self.get_serializer(comments, many=True)
             return Response(serializer.data)
         return Response({"detail": "Post ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

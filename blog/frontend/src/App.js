@@ -29,7 +29,8 @@ const App = () => {
       <Navbar user={user} onLogout={handleLogout} />
       <Routes>
         <Route path="/login" element={<LoginPage setUser={setUser} />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/register" element={<RegisterPage setUser={setUser} />} />
+
         <Route path="/posts" element={<PostList />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/" element={<h1>{user ? `Welcome, ${user.username}` : 'Welcome, Guest'}</h1>} />

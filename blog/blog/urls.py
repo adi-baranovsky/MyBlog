@@ -44,7 +44,7 @@ urlpatterns = [
     path('api/profile/', get_profile, name='get_profile'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('comments/create/', CommentCreateView.as_view(), name='comment-create'),
+    path('api/comments/create/', CommentCreateView.as_view(), name='comment-create'),
     path('api/auth/', include('dj_rest_auth.urls')),  # This handles /user/
     path('api/auth/user/', CustomUserDetailsView.as_view(), name='user-details'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
