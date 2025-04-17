@@ -8,6 +8,8 @@ const PostItem = ({ post }) => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [liked, setLiked] = useState(false);
+  const [showLikes, setShowLikes] = useState(false);
+  const [likedBy, setLikedBy] = useState([]);
 
   const token = localStorage.getItem("token");
 
@@ -148,6 +150,34 @@ const PostItem = ({ post }) => {
     }
   };
 
+  const toggleShowLikes = async () => {
+    const postId = post.id;
+    const contentTypeId = 7; // adjust if needed for your content type
+  
+    if (!showLikes) {
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/likes/liked_by/?object_id=${postId}&content_type=${contentTypeId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (res.ok) {
+          const data = await res.json();
+          setLikedBy(data.usernames);
+        } else {
+          console.error("Failed to fetch liked by list");
+        }
+      } catch (err) {
+        console.error("Error fetching liked by list:", err);
+      }
+    }
+  
+    setShowLikes(!showLikes);
+  };
+  
+  
+
   return (
     <div className="post-card">
       <h2 className="post-title">{post.title}</h2>
@@ -163,6 +193,21 @@ const PostItem = ({ post }) => {
 
           <span style={{ marginLeft: "4px" }}>{post.likes_count}</span>
         </button>
+        <button className="liked-by-btn" onClick={toggleShowLikes}>
+          Liked by
+        </button>
+
+        {showLikes && (
+          <div className="liked-by-popup">
+            {likedBy.length > 0 ? (
+              likedBy.map((name, index) => <div key={index}>{name}</div>)
+            ) : (
+              <div>No likes yet</div>
+            )}
+          </div>
+        )}
+
+
       </div>
 
       <div className="comments-section">

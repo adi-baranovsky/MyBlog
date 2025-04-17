@@ -212,6 +212,18 @@ class LikeViewSet(viewsets.ModelViewSet):
         liked = Like.objects.filter(object_id=post_id, user=user, content_type=content_type_id).exists()
         
         return Response({"liked": liked}, status=status.HTTP_200_OK)
+    @action(detail=False, methods=['get'])
+    def liked_by(self, request):
+        post_id = request.query_params.get("object_id")
+        content_type_id = request.query_params.get("content_type")
+
+        if not post_id or not content_type_id:
+            return Response({"detail": "Post ID and content type are required."}, status=400)
+
+        likes = Like.objects.filter(object_id=post_id, content_type=content_type_id)
+        usernames = [like.user.username for like in likes]
+
+        return Response({"usernames": usernames})
 
 
 

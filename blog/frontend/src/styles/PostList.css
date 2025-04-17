@@ -273,3 +273,24 @@ button:disabled {
 .comment-btn:active {
   transform: scale(0.95);
 }
+
+.liked-by-btn {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: #555;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 10px;
+}
+
+.liked-by-popup {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-top: 10px;
+}
